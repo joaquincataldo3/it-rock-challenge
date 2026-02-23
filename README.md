@@ -4,7 +4,7 @@
 
 1. Clone the repository
 ```bash
-git clone <repo>
+git clone https://github.com/joaquincataldo3/it-rock-challenge
 cd it-rock-challenge
 ```
 
@@ -34,12 +34,15 @@ Authorization: Bearer <token>
 
 ## API Documentation
 Full API documentation is available in `swagger.yaml`.
-You can visualize it at https://editor.swagger.io
+You can visualize it at https://editor.swagger.io by copying and pastying the content of swagger.yaml
 
 ## Technical Decisions
 
 ### Storage
 SQLite was chosen for simplicity and persistence between restarts without requiring any external infrastructure. 
+
+### Serverless Framework
+Serverless Framework was chosen to simulate the Lambda + API Gateway architecture locally using `serverless-offline`.
 
 ### Serverless Architecture
 The SQLite connection is initialized outside the handler to take advantage of Lambda's container reuse and minimize cold start impact.
