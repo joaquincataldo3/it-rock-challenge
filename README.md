@@ -4,7 +4,7 @@
 
 1. Clone the repository
 ```bash
-git clone <repo>
+git clone https://github.com/joaquincataldo3/it-rock-challenge
 cd it-rock-challenge
 ```
 
