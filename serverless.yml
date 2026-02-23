@@ -1,0 +1,62 @@
+service: it-rock-challenge
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-1
+  environment:
+    JWT_SECRET: ${env:JWT_SECRET}
+
+plugins:
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    httpPort: 3000
+    noPrependStageInUrl: true
+
+functions:
+  login:
+    handler: src/handlers/auth.handleLogin
+    events:
+      - http:
+          path: /login
+          method: post
+
+  getTasks:
+    handler: src/handlers/tasks.handleGetAll
+    events:
+      - http:
+          path: /task
+          method: get
+
+  importTasks:
+    handler: src/handlers/tasks.handleImportFromApi
+    events:
+      - http:
+          path: /task/import
+          method: post
+
+  createTask:
+    handler: src/handlers/tasks.handleCreate
+    events:
+      - http:
+          path: /task
+          method: post
+
+  updateTask:
+    handler: src/handlers/tasks.handleUpdate
+    events:
+      - http:
+          path: /task/{id}
+          method: patch
+
+  removeTask:
+    handler: src/handlers/tasks.handleRemove
+    events:
+      - http:
+          path: /task/{id}
+          method: delete
+

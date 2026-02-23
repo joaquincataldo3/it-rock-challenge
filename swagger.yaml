@@ -1,0 +1,276 @@
+openapi: 3.0.0
+info:
+  title: IT Rock Challenge
+  version: 1.0.0
+  description: Personal task management API
+
+paths:
+  /auth/login:
+    post:
+      summary: Login with static credentials
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: admin
+                password:
+                  type: string
+                  example: password123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGci...
+        '400':
+          description: Missing username or password
+        '401':
+          description: Invalid credentials
+        '500':
+          description: Internal server error
+
+  /task:
+    get:
+      summary: Get all tasks for the authenticated user
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Tasks per page
+        - in: query
+          name: completed
+          schema:
+            type: boolean
+          description: Filter by completed status
+        - in: query
+          name: from
+          schema:
+            type: string
+            example: '2024-01-01'
+          description: Filter tasks created after this date (ISO format)
+        - in: query
+          name: to
+          schema:
+            type: string
+            example: '2024-12-31'
+          description: Filter tasks created before this date (ISO format)
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+                  page:
+                    type: integer
+                    example: 1
+                  limit:
+                    type: integer
+                    example: 10
+                  total:
+                    type: integer
+                    example: 25
+                  pages:
+                    type: integer
+                    example: 3
+        '401':
+          description: Missing or invalid token
+        '500':
+          description: Internal server error
+    post:
+      summary: Creates a new task
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                  example: Carwash
+                description:
+                  type: string
+                  example: Take the car to the carwash
+      responses:
+        '201':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: Title is required
+        '401':
+          description: Missing or invalid token
+        '500':
+          description: Internal server error
+    
+  /task/{id}:
+    patch:
+      summary: Updates a task
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Task ID
+      requestBody:
+        required: true
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+              example:
+                id: f47ac10b-58cc-4372-a567-0e02b2c3d479
+                title: Carwash updated
+                description: Updated description for carwash
+                completed: true
+                userId: f47ac10b-58cc-4372-a567-0e02b2c3d479
+                createdAt: '2024-01-01T00:00:00.000Z'
+      responses:
+        '200':
+          description: Task updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          description: At least one field is required
+        '401':
+          description: Missing or invalid token
+        '404':
+          description: Task not found
+        '500':
+          description: Internal server error
+    delete:
+          summary: Deletes a task
+          security:
+            - bearerAuth: []
+          parameters:
+            - in: path
+              name: id
+              required: true
+              schema:
+                type: string
+              description: Task ID
+          responses:
+            '200':
+              description: Task deleted
+              content:
+                application/json:
+                  schema:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Task deleted successfully
+            '401':
+              description: Missing or invalid token
+            '404':
+              description: Task not found
+            '500':
+              description: Internal server error        
+  
+  /task/import:
+    post:
+      summary: Import tasks from external API
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Tasks imported successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  imported:
+                    type: integer
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+              example:
+                imported: 2
+                tasks:
+                  - id: f47ac10b-58cc-4372-a567-0e02b2c3d479
+                    title: Lorem ipsum 
+                    description: ''
+                    completed: false
+                    userId: f47ac10b-58cc-4372-a567-0e02b2c3d479
+                    createdAt: '2024-01-01T00:00:00.000Z'
+                  - id: a1b2c3d4-58cc-4372-a567-0e02b2c3d479
+                    title: Lorem ipsum 2
+                    description: ''
+                    completed: true
+                    userId: f47ac10b-58cc-4372-a567-0e02b2c3d479
+                    createdAt: '2024-01-01T00:00:00.000Z'
+        '401':
+          description: Missing or invalid token
+        '500':
+          description: Internal server error
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        title:
+          type: string
+          example: Carwash
+        description:
+          type: string
+          example: Take the car to the carwash
+        completed:
+          type: boolean
+          example: false
+        userId:
+          type: string
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        createdAt:
+          type: string
+          example: '2024-01-01T00:00:00.000Z'
