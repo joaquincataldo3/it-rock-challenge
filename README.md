@@ -23,7 +23,7 @@ cp .env.example .env
 npm run start
 ```
 
-This will prompt you to login to Serverless Framework, which will open the browser automatically. Once authenticated, the API will be available at `http://localhost:3000`
+This will prompt you to either login or register to Serverless Framework, which will open the browser automatically. Once authenticated, the API will be available at `http://localhost:3000`
 
 ## Authentication
 All endpoints except `POST /auth/login` require a valid JWT token.
