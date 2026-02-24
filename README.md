@@ -33,8 +33,9 @@ Authorization: Bearer <token>
 ```
 
 ## API Documentation
-Full API documentation is available in `swagger.yaml`.
+API documentation is available in `swagger.yaml`.
 You can visualize it at https://editor.swagger.io by copying and pastying the content of swagger.yaml
+You can also find the Postman collection in the repository.
 
 ## Technical Decisions
 
