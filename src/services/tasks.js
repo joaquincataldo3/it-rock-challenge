@@ -49,7 +49,7 @@ export const getAll = (userId, filters = {}) => {
   const total = db.prepare('SELECT COUNT(*) as count FROM tasks WHERE userId = ?').get(userId).count;
 
   return {
-    // sqllite doesn't have boolean type, 0/1 is used instead
+    // sqlite doesn't have boolean type, 0/1 is used instead
     tasks: tasks.map(task => ({ ...task, completed: task.completed === 1 })),
     page,
     limit,
@@ -70,7 +70,7 @@ export const update = (userId, id, fields) => {
     WHERE id = @id AND userId = @userId
   `).run({
     ...updated,
-    // sqllite doesn't have boolean type, 0/1 is used instead
+    // sqlite doesn't have boolean type, 0/1 is used instead
     completed: updated.completed ? 1 : 0
   });
 
@@ -90,6 +90,7 @@ export const importFromApi = async (userId) => {
   const response = await fetch(TODOS_API_URL);
   const todos = await response.json();
 
+  // admin maps to userId 1 in the external api
   const filtered = todos.filter(todo => todo.userId === 1).slice(0, 5);
 
   if (filtered.length === 0) {
